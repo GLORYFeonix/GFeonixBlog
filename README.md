@@ -1,2 +1,0 @@
-# GFeonixBlog
-My Blog
