@@ -32,7 +32,7 @@ public class Post
     public DateTime LastUpdateTime { get; set; }
 
     // 分类ID
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
 
     // 分类
     public Category? Category { get; set; }
