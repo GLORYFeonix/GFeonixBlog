@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Data", "GFeonix
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Migrate", "GFeonixBlog.Migrate\GFeonixBlog.Migrate.csproj", "{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Web", "GFeonixBlog.Web\GFeonixBlog.Web.csproj", "{99BCBA71-1275-4C19-AB6E-3A26952C3162}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +30,5 @@ Global
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99BCBA71-1275-4C19-AB6E-3A26952C3162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99BCBA71-1275-4C19-AB6E-3A26952C3162}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99BCBA71-1275-4C19-AB6E-3A26952C3162}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99BCBA71-1275-4C19-AB6E-3A26952C3162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

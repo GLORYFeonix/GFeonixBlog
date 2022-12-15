@@ -10,7 +10,7 @@ public class Category
 
     public Category? Parent { get; set; }
 
-    public bool Visible { get; set; } = true;
+    // public bool Visible { get; set; } = true;
 
     public List<Post>? Posts { get; set; }
 }

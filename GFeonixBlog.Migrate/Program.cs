@@ -1,13 +1,12 @@
 ﻿using GFeonixBlog.Data.Models;
 using GFeonixBlog.Migrate;
 
-// string importDir = @"C:\Users\GFeonix\Desktop\GFeonixBlog\GFeonixBlog.Migrate\blogs\";
-string importDir = Path.GetFullPath("/GFeonixBlog.Migrate/blogs/");
-string assetsPath = Path.GetFullPath("../../../../StarBlog.Web/wwwroot/media/blog");
+string importDir = Path.GetFullPath("./GFeonixBlog.Migrate/blogs/");
+string assetsPath = Path.GetFullPath("./GFeonixBlog.Web/wwwroot/media/blog");
 
-TraverseTree(@".\GFeonixBlog.Migrate\blogs");
+CopyBlogs(@".\GFeonixBlog.Migrate\blogs");
 
-void TraverseTree(string root)
+void CopyBlogs(string root)
 {
     var rootPath = System.IO.Path.GetFullPath(root);
 
@@ -63,14 +62,14 @@ void TraverseTree(string root)
             try
             {
                 System.IO.FileInfo fi = new System.IO.FileInfo(file);
-                // Console.WriteLine("{0}: {1}, {2}", fi.Name, fi.Length, fi.CreationTime);
+
                 Console.WriteLine(fi.Name);
 
                 var postPath = fi.DirectoryName.Replace(rootPath, "").Remove(0, 1);
 
                 var categoryNames = postPath.Split("\\").SkipLast(1).ToList();
 
-                Console.WriteLine($"categoryNames: {string.Join("|", categoryNames)}");
+                Console.WriteLine($"分类: {string.Join("/", categoryNames)}");
 
                 var categories = new List<Category>();
 
@@ -97,13 +96,10 @@ void TraverseTree(string root)
                 var post = new Post
                 {
                     Title = fi.Name.Replace(".md", ""),
-                    Status = "已发布",
-                    IsPublish = true,
-                    // Content = content,
-                    Path = postPath,
+                    Content = content,
                     CreationTime = fi.CreationTime,
                     LastUpdateTime = fi.LastWriteTime,
-                    Categories = string.Join("|", categories.Select(a => a.Id))
+                    Categories = categories
                 };
                 if (categories.Count > 0)
                 {
@@ -112,11 +108,12 @@ void TraverseTree(string root)
                 }
 
                 var processor = new PostProcessor(importDir, assetsPath, post);
-                // 处理文章标题和状态
-                processor.InflateStatusTitle();
-                // 处理文章正文内容
-                // 导入文章的时候一并导入文章里的图片，并对图片相对路径做替换操作
-                post.Content = processor.MarkdownParse();
+                // // 处理文章标题和状态
+                // processor.InflateStatusTitle();
+                // // 处理文章正文内容
+                // // 导入文章的时候一并导入文章里的图片，并对图片相对路径做替换操作
+                // post.Content = processor.MarkdownParse();
+                processor.CopyPost();
                 post.Summary = processor.GetSummary(200);
 
                 System.Console.WriteLine();
@@ -129,6 +126,8 @@ void TraverseTree(string root)
         }
 
         foreach (string str in subDirs)
+        {
             dirs.Push(str);
+        }
     }
 }
