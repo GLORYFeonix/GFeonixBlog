@@ -5,6 +5,8 @@
 
 # test
 /GFeonixBlog.Migrate/blogs
+/GFeonixBlog.Api/blogs
+/GFeonixBlog.Api/Controllers
 
 # vscode
 *.vscode

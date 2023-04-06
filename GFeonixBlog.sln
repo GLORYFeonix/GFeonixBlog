@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Data", "GFeonix
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Migrate", "GFeonixBlog.Migrate\GFeonixBlog.Migrate.csproj", "{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFeonixBlog.Api", "GFeonixBlog.Api\GFeonixBlog.Api.csproj", "{459FF669-4E95-4586-964B-CCAE8421A63D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFAEDE3A-1383-418F-B66E-46E3C1D21C0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459FF669-4E95-4586-964B-CCAE8421A63D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459FF669-4E95-4586-964B-CCAE8421A63D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459FF669-4E95-4586-964B-CCAE8421A63D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459FF669-4E95-4586-964B-CCAE8421A63D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

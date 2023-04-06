@@ -2,7 +2,7 @@
 using GFeonixBlog.Migrate;
 
 string importDir = Path.GetFullPath("./GFeonixBlog.Migrate/blogs/");
-string assetsPath = Path.GetFullPath("./GFeonixBlog.Web/wwwroot/media/blog");
+string assetsPath = Path.GetFullPath("./GFeonixBlog.Api/blogs");
 
 CopyBlogs(@".\GFeonixBlog.Migrate\blogs");
 
