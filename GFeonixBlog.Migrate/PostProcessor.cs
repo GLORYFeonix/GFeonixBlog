@@ -1,135 +1,119 @@
-using System.Text.RegularExpressions;
+using GFeonixBlog.Data.Contexts;
 using GFeonixBlog.Data.Models;
 using Markdig;
-using Markdig.Renderers.Normalize;
-using Markdig.Syntax;
-using Markdig.Syntax.Inlines;
 
 namespace GFeonixBlog.Migrate;
 
 public class PostProcessor
 {
-    private readonly Post _post;
-    private readonly string _importPath;
-    private readonly string _assetsPath;
+    private string _path { get; set; }
+    private Post _post { get; set; }
 
-    public PostProcessor(string importPath, string assetsPath, Post post)
+    public PostProcessor(string path)
     {
-        _post = post;
-        _assetsPath = assetsPath;
-        _importPath = importPath;
+        _path = path;
+        _post = new();
     }
 
-    // 获取摘要
-    public string GetSummary(int length)
+    /// <summary>
+    /// 获取标题
+    /// </summary>
+    private void GetTittle()
     {
-        return _post.Content == null ? string.Empty : Markdown.ToPlainText(_post.Content).Substring(0, length);
+        _post.Title = Path.GetFileNameWithoutExtension(_path);
     }
 
-    // // 获取文章状态
-    // public void InflateStatusTitle()
-    // {
-    //     const string pattern = @"^（(.+)）(.+)$";
-    //     var status = _post.Status ?? "已发布";
-    //     var title = _post.Title;
-    //     if (string.IsNullOrEmpty(title))
-    //     {
-    //         _post.Status = status;
-    //         _post.Title = $"未命名文章{_post.CreationTime.ToLongDateString()}";
-    //     }
-
-    //     var result = Regex.Match(title, pattern);
-    //     if (result.Success)
-    //     {
-    //         status = result.Groups[1].Value;
-    //         title = result.Groups[2].Value;
-    //     }
-    //     _post.Status = status;
-    //     _post.Title = title;
-
-    //     if (!new[] { "已发布" }.Contains(_post.Status))
-    //     {
-    //         _post.IsPublish = false;
-    //     }
-    // }
-
-    // // Markdown内容解析，复制图片 & 替换图片链接
-    // public string MarkdownParse()
-    // {
-    //     if (_post.Content == null)
-    //     {
-    //         return string.Empty;
-    //     }
-
-    //     var document = Markdown.Parse(_post.Content);
-
-    //     foreach (var node in document.AsEnumerable())
-    //     {
-    //         if (node is not ParagraphBlock { Inline: { } } paragraphBlock) continue;
-    //         foreach (var inline in paragraphBlock.Inline)
-    //         {
-    //             if (inline is not LinkInline { IsImage: true } linkInline) continue;
-
-    //             if (linkInline.Url == null) continue;
-    //             if (linkInline.Url.StartsWith("http")) continue;
-
-    //             // 路径处理
-    //             var imgPath = Path.Combine(_importPath, _post.Title, linkInline.Url);
-    //             var imgFilename = Path.GetFileName(linkInline.Url);
-    //             var destDir = Path.Combine(_assetsPath, _post.Title.ToString());
-    //             if (!Directory.Exists(destDir))
-    //             {
-    //                 Directory.CreateDirectory(destDir);
-    //             }
-    //             var destPath = Path.Combine(destDir, imgFilename);
-    //             // if (File.Exists(destPath))
-    //             // {
-    //             //     // 图片重名处理
-    //             //     var imgId = GuidUtils.GuidTo16String();
-    //             //     imgFilename = $"{Path.GetFileNameWithoutExtension(imgFilename)}-{imgId}.{Path.GetExtension(imgFilename)}";
-    //             //     destPath = Path.Combine(destDir, imgFilename);
-    //             // }
-
-    //             // 替换图片链接
-    //             // linkInline.Url = imgFilename;
-    //             // 复制图片
-    //             File.Copy(imgPath, destPath);
-
-    //             Console.WriteLine($"复制 {imgPath} 到 {destPath}");
-    //         }
-    //     }
-
-
-    //     using var writer = new StringWriter();
-    //     var render = new NormalizeRenderer(writer);
-    //     render.Render(document);
-    //     return writer.ToString();
-    // }
-
-    public void CopyPost()
+    /// <summary>
+    /// 获取内容
+    /// </summary>
+    private void GetContent()
     {
-        string categoriesPath = string.Empty;
-        foreach (var category in _post.Categories)
+        using StreamReader sr = new(_path);
+        var mdText = sr.ReadToEnd();
+        _post.Markdown = mdText;
+        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        _post.Content = Markdown.ToPlainText(mdText, pipeline);
+    }
+
+    /// <summary>
+    /// 获取摘要
+    /// </summary>
+    private void GetSummary()
+    {
+        _post.Summary = _post.Content[..200];
+    }
+
+    /// <summary>
+    /// 获取时间信息
+    /// </summary>
+    private void GetTimeInfo()
+    {
+        var fi = new FileInfo(_path);
+        _post.CreateTime = fi.CreationTime;
+        _post.UpdateTime = fi.LastWriteTime;
+    }
+
+    /// <summary>
+    /// 获取分类
+    /// </summary>
+    private void GetCategories()
+    {
+
+    }
+
+    /// <summary>
+    /// 获取文章信息
+    /// </summary>
+    public void GetInfo()
+    {
+        GetTittle();
+        GetContent();
+        GetSummary();
+        GetTimeInfo();
+        GetCategories();
+    }
+
+    /// <summary>
+    /// 存储到数据库
+    /// </summary>
+    /// <param name="db"></param>
+    public void ToDB(BlogContext db)
+    {
+        var post = db.Posts.SingleOrDefault(p => p.Title == _post.Title);
+
+        if (post == null)
         {
-            categoriesPath = Path.Join(categoriesPath, category.Name);
+            db.Posts.Add(_post);
+        }
+        else
+        {
+            post.Title = _post.Title;
+            post.Summary = _post.Summary;
+            post.Content = _post.Content;
+            post.Markdown = _post.Markdown;
+            post.CreateTime = _post.CreateTime;
+            post.UpdateTime = _post.UpdateTime;
+            post.Categories = _post.Categories;
+        }
+        db.SaveChanges();
+    }
+
+    /// <summary>
+    /// 生成 html 文件
+    /// </summary>
+    /// <param name="dstPath"></param>
+    public void ToHtml(string dstPath)
+    {
+        if (!Directory.Exists(Path.GetDirectoryName(dstPath)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
         }
 
-        string sourcePath = Path.Join(_importPath, categoriesPath, _post.Title);
-        string targetPath = Path.Join(_assetsPath, categoriesPath, _post.Title);
+        using StreamReader sr = new(_path);
+        using StreamWriter sw = new(dstPath.Replace(".md", ".html"));
 
-        string[] files = System.IO.Directory.GetFiles(sourcePath);
-
-        // Copy the files and overwrite destination files if they already exist.
-        foreach (var file in files)
-        {
-            // Use static Path methods to extract only the file name from the path.
-            var fileName = System.IO.Path.GetFileName(file);
-            var destPath = System.IO.Path.Combine(targetPath, fileName);
-            if (!Directory.Exists(targetPath))
-            {
-                Directory.CreateDirectory(targetPath);
-            }
-            System.IO.File.Copy(file, destPath, true);
-        }
+        var text = sr.ReadToEnd();
+        text = Markdown.ToHtml(text);
+        sw.Write(text);
     }
 }
