@@ -2,6 +2,9 @@ namespace GFeonixBlog.Data.Models;
 // 文章
 public class Post
 {
+    /// <summary>
+    /// ID
+    /// </summary>
     public int ID { get; set; }
 
     /// <summary>
@@ -20,9 +23,14 @@ public class Post
     public string Content { get; set; }
 
     /// <summary>
-    /// 内容 (Markdown格式)
+    /// 内容（Markdown格式）
     /// </summary>
     public string Markdown { get; set; }
+
+    /// <summary>
+    /// 内容（Html格式）
+    /// </summary>
+    public string Html { get; set; }
 
     /// <summary>
     /// 创建时间

@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/ListView.vue')
+      component: () => import('../views/main/ListView.vue')
     },
     {
       path: '/list',
@@ -14,7 +14,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/ListView.vue')
+      component: () => import('../views/main/ListView.vue')
     },
     {
       path: '/post/:id',
@@ -22,7 +22,19 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/PostView.vue')
+      component: () => import('../views/main/PostView.vue')
+    },
+    {
+      path: '/404',
+      name: '404',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/main/NotFoundView.vue')
+    },
+    {
+      path: '/:pathMatch(.*)',
+      redirect: '/404'
     }
   ]
 })

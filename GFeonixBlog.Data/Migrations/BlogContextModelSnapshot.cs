@@ -65,6 +65,10 @@ namespace GFeonixBlog.Data.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Html")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Markdown")
                         .IsRequired()
                         .HasColumnType("TEXT");

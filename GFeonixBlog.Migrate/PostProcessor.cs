@@ -1,18 +1,19 @@
 using GFeonixBlog.Data.Contexts;
 using GFeonixBlog.Data.Models;
 using Markdig;
+using Markdig.Syntax;
 
 namespace GFeonixBlog.Migrate;
 
 public class PostProcessor
 {
-    private string _path { get; set; }
-    private Post _post { get; set; }
+    private string Path { get; set; }
+    private Post Post { get; set; }
 
     public PostProcessor(string path)
     {
-        _path = path;
-        _post = new();
+        Path = path;
+        Post = new();
     }
 
     /// <summary>
@@ -20,7 +21,7 @@ public class PostProcessor
     /// </summary>
     private void GetTittle()
     {
-        _post.Title = Path.GetFileNameWithoutExtension(_path);
+        Post.Title = System.IO.Path.GetFileNameWithoutExtension(Path);
     }
 
     /// <summary>
@@ -28,11 +29,12 @@ public class PostProcessor
     /// </summary>
     private void GetContent()
     {
-        using StreamReader sr = new(_path);
+        using StreamReader sr = new(Path);
         var mdText = sr.ReadToEnd();
-        _post.Markdown = mdText;
+        Post.Markdown = mdText;
         var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-        _post.Content = Markdown.ToPlainText(mdText, pipeline);
+        Post.Content = Markdown.ToPlainText(mdText, pipeline);
+        Post.Html = Markdown.ToHtml(mdText, pipeline);
     }
 
     /// <summary>
@@ -40,7 +42,7 @@ public class PostProcessor
     /// </summary>
     private void GetSummary()
     {
-        _post.Summary = _post.Content[..200];
+        Post.Summary = Post.Content[..200];
     }
 
     /// <summary>
@@ -48,9 +50,9 @@ public class PostProcessor
     /// </summary>
     private void GetTimeInfo()
     {
-        var fi = new FileInfo(_path);
-        _post.CreateTime = fi.CreationTime;
-        _post.UpdateTime = fi.LastWriteTime;
+        var fi = new FileInfo(Path);
+        Post.CreateTime = fi.CreationTime;
+        Post.UpdateTime = fi.LastWriteTime;
     }
 
     /// <summary>
@@ -79,21 +81,22 @@ public class PostProcessor
     /// <param name="db"></param>
     public void ToDB(BlogContext db)
     {
-        var post = db.Posts.SingleOrDefault(p => p.Title == _post.Title);
+        var post = db.Posts.SingleOrDefault(p => p.Title == Post.Title);
 
         if (post == null)
         {
-            db.Posts.Add(_post);
+            db.Posts.Add(Post);
         }
         else
         {
-            post.Title = _post.Title;
-            post.Summary = _post.Summary;
-            post.Content = _post.Content;
-            post.Markdown = _post.Markdown;
-            post.CreateTime = _post.CreateTime;
-            post.UpdateTime = _post.UpdateTime;
-            post.Categories = _post.Categories;
+            post.Title = Post.Title;
+            post.Summary = Post.Summary;
+            post.Content = Post.Content;
+            post.Markdown = Post.Markdown;
+            post.Html = Post.Html;
+            post.CreateTime = Post.CreateTime;
+            post.UpdateTime = Post.UpdateTime;
+            post.Categories = Post.Categories;
         }
         db.SaveChanges();
     }
@@ -104,12 +107,12 @@ public class PostProcessor
     /// <param name="dstPath"></param>
     public void ToHtml(string dstPath)
     {
-        if (!Directory.Exists(Path.GetDirectoryName(dstPath)))
+        if (!Directory.Exists(System.IO.Path.GetDirectoryName(dstPath)))
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(dstPath));
         }
 
-        using StreamReader sr = new(_path);
+        using StreamReader sr = new(Path);
         using StreamWriter sw = new(dstPath.Replace(".md", ".html"));
 
         var text = sr.ReadToEnd();
