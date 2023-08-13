@@ -5,8 +5,10 @@
 
 # test
 /GFeonixBlog.Migrate/blogs
-/GFeonixBlog.Data/GFeonixBlog.db
 /GFeonixBlog.Data/Migrations
+/GFeonixBlog.Data/GFeonixBlog.db
+/GFeonixBlog.Data/GFeonixBlog.db-shm
+/GFeonixBlog.Data/GFeonixBlog.db-wal
 
 # vscode
 *.vscode
